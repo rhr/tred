@@ -1,0 +1,103 @@
+<html>
+  <head>
+    {{u="/%s/static/spacetree.css" % request.application}}
+    <link type="text/css" rel="stylesheet" href="{{=u}}" />
+
+<!--[if IE]>
+<script type="text/javascript" src="/{{=request.application}}/static/Jit/Extras/excanvas.js"></script>
+<![endif]-->
+
+    <script type="text/javascript"
+            src="/{{=request.application}}/static/Jit/jit.js">
+    </script>
+    <script type="text/javascript">
+function init() {
+    var json= {{=tree.root.emit_json()}};
+
+      //Create a new canvas instance.
+      var canvas = new Canvas('mycanvas', {
+         //Where to inject canvas. Any HTML container will do.
+         'injectInto':'infovis',
+         //Set width and height, default's to 200.
+         'width': window.innerWidth,
+         'height':window.innerHeight,
+         //Set a background color in case the browser
+         //does not support clearing a specific area.
+        'backgroundColor': '#222'
+      });
+    //Create a new ST instance
+    var st= new ST(canvas, {
+      orientation: 'left',
+      levelsToShow: 3,
+      levelDistance: 40,
+      duration: 400,
+      //set node and edge colors
+      Node: {
+        type:'none',
+        overridable:true,
+        color: '#ccb'
+      },
+      Edge: {
+        type:'bezier',
+        overridable:true,
+        color: '#ccb'
+      },
+    //Add an event handler to the node when creating it.
+        onCreateLabel: function(label, node) {
+            label.id = node.id;
+            label.innerHTML = '<span style="color:lightgray">'+node.name+'</span>';
+            label.onclick = function(){
+                st.onClick(node.id, {Move: {offsetX:200}});
+            };
+        },
+        //This method is called right before plotting
+        //a node. It's useful for changing an individual node
+        //style properties before plotting it.
+        //The data properties prefixed with a dollar
+        //sign will override the global node style properties.
+        onBeforePlotNode: function(node) {
+            //add some color to the nodes in the path between the
+            //root node and the selected node.
+            if (node.selected) {
+                node.data.$color = "#ff7";
+            } else {
+                delete node.data.$color;
+            }
+        },
+
+        //This method is called right before plotting
+        //an edge. It's useful for changing an individual edge
+        //style properties before plotting it.
+        //Edge data properties prefixed with a dollar sign will
+        //override the Edge global style properties.
+        onBeforePlotLine: function(adj){
+            if (adj.nodeFrom.selected && adj.nodeTo.selected) {
+                adj.data.$color = "#eed";
+                adj.data.$lineWidth = 3;
+            }
+            else {
+                delete adj.data.$color;
+                delete adj.data.$lineWidth;
+            }
+        }
+    });
+ 
+
+   //load json data
+    st.loadJSON(json);
+    //compute node positions and layout
+    st.compute();
+    //optional: make a translation of the tree
+    st.geom.translate(new Complex(0, -200), "pos");
+    //Emulate a click on the root node.
+    st.onClick(st.root, {Move: {offsetX:200}});
+}
+
+    </script>
+  </head>
+
+  <body onload="init();">
+    <div id="infovis"></div>
+  </body>
+</html>
+

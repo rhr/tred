@@ -1,0 +1,125 @@
+{{extend 'layout.html'}}
+
+<table>
+<tr>
+<td style="width:20em">
+
+<form action="printer" method="post">
+<input type="hidden" name="i" value="{{=request.vars.i}}" />
+<input type="hidden" name="p" value="" />
+<input type="hidden" name="parsevars" value="t" />
+<div style="padding:0.25em">
+Title:
+{{title = tree.printopts.title or '%s-%s'%(tree.source,tree.name)}}
+<input name="title" value="{{=title}}" style="width:100%"
+       onchange="this.form.action = 'printer';" />
+</div>
+<table>
+<tr>
+  <td>Page size:</td><td>{{=tree.printopts.pgsize_select_html()}}</td>
+</tr>
+{{if tree.phylogram:}}
+<tr>
+  <td>Scaled branches:</td>
+  <td>{{=tree.printopts.scalebranches_select_html()}}</td>
+</tr>
+{{pass}}
+<tr>
+  <td>Font size (points):</td>
+  <td>
+    <input name="baseheight" value="{{=tree.printopts.baseheight}}"
+           size="3" onchange="this.form.action = 'printer';" />
+  </td>
+</tr>
+<tr>
+  <td>Vertical node spacing:</td>
+  <td>
+    <input name="vpad" value="{{=tree.printopts.vpad}}"
+           size="3" title="proportion of font size"
+           onchange="this.form.action = 'printer';" />
+  </td>
+</tr>
+<tr>
+  <td>Unit branch length (points):</td>
+  <td>
+    <input name="unitwidth" value="{{=tree.printopts.unitwidth}}" size="3"
+           onchange="this.form.action = 'printer';" />
+  </td>
+</tr>
+<tr>
+  <td>Margin (points):</td>
+  <td>
+    <input name="border" value="{{=tree.printopts.border}}" size="3"
+           onchange="this.form.action = 'printer';" />
+  </td>
+</tr>
+<tr>
+  <td>Draw clade labels:</td>
+  <td>
+    {{=INPUT(_name = "draw_intlabels",
+             _type = "checkbox",
+             value = "intlabel" in tree.printopts.visible)}}
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+    <input type="submit" value="Refresh preview"
+           onclick="this.form.action='printer';" />
+
+    <div style="padding-top:0.25em">
+    <input type="button" value="Download PDF"
+           onclick="this.form.action='printout'; this.form.submit()" />
+    </div>
+    <div style="padding-top:0.25em">
+    <input type="button" value="Download single-page PDF"
+           onclick="this.form.action='pdfsingle'; this.form.submit()" />
+    </div>
+    <div style="padding-top:0.25em;display:none">
+    <input type="button" value="Download SVG"
+           onclick="this.form.action='pdf2svg'; this.form.submit()" />
+    </div>
+  </td>
+</tr>
+</table>
+
+<div style="padding-top:1em;">
+<input id="treenum" type="hidden" value="{{=request.vars.i}}" >
+<div style="padding:0.25em;display:none">
+  Labels: {{=tree.labeltype_select(request)}}
+</div>
+<div style="padding:0.25em">
+  Sort order: {{=tree.sortorder_select(request)}}
+</div>
+<div style="padding:0.25em 0.5em 0em 0.25em">
+  {{u = URL(r=request, f="labelfilter_changed")}}
+  <input id="labelfilter" value="{{=tree.labelfilter or ''}}"
+         onchange="ajax('{{=u}}',['treenum','labelfilter'],'nodelabels')"
+         style="width:100%" />
+</div>
+<div id="nodelabels" style="padding:0.25em">
+{{=tree.labelselect()}}
+</div>
+</div>
+
+  <input type="button" value="Reroot at MRCA"
+         onclick="this.form.action='printer_reroot';this.form.submit()" />
+  <input type="button" value="Prune taxa"
+         onclick="this.form.action='printer_prune_taxa';this.form.submit()" />
+</form>
+
+</td>
+
+<td>
+  <div>
+    {{u=URL(r=request,vars=dict(i=request.vars.i,ladderize=1))}}
+    <a href="{{=u}}">[ladderize]</a>
+    &nbsp;&nbsp;
+    {{u=URL(r=request,vars=dict(i=request.vars.i,ladderize=1,rev=1))}}
+    <a href="{{=u}}">[reverse]</a>
+  </div>
+{{for f in pngs:}}
+<img src="png_preview/{{=f}}" style="border:solid 1px" />
+{{pass}}
+</td>
+</tr>
+</table>

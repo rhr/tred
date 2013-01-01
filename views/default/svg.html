@@ -1,0 +1,12 @@
+{{extend 'layout.html'}}
+
+<div style="padding:1em">
+  {{u=URL(r=request,vars=dict(i=request.vars.i,ladderize=1))}}
+  <a href="{{=u}}">[ladderize]</a>
+  &nbsp;&nbsp;
+  {{u=URL(r=request,vars=dict(i=request.vars.i,ladderize=1,rev=1))}}
+  <a href="{{=u}}">[reverse]</a>
+</div>
+
+<div id="thetree">
+</div>

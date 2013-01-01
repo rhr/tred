@@ -1,0 +1,56 @@
+<html>
+  <head>
+    {{u="/%s/static/hypertree.css" % request.application}}
+    <link type="text/css" rel="stylesheet" href="{{=u}}" />
+
+<!--[if IE]>
+<script type="text/javascript" src="/{{=request.application}}/static/Jit/Extras/excanvas.js"></script>
+<![endif]-->
+
+    <script type="text/javascript"
+            src="/{{=request.application}}/static/Jit/jit.js">
+    </script>
+    <script type="text/javascript">
+function init() {
+
+var json = {{=tree.root.emit_json()}};
+//Create a new canvas instance.
+var canvas = new Canvas('mycanvas', {
+  //Where to inject the canvas. Any HTML container will do.
+  'injectInto':'infovis',
+  //Width and height of canvas, default's to 200.
+  'width': 900,
+  'height':800
+});
+
+//create a new hypertree instance.
+var ht= new Hypertree(canvas, {
+  //Add colors for nodes and edges
+  Node: {
+    color: '#ddd'
+  },
+  Edge: {
+    color: '#dd00bb'
+  },
+
+  //Add node names to node labels
+  onCreateLabel: function(domElement, node) {
+    domElement.innerHTML = node.name;
+  }
+
+});
+
+//feed the hypertree with the JSON structure.
+ht.loadJSON(json);
+
+//compute node positions and plot
+ht.refresh();
+}
+    </script>
+  </head>
+
+  <body onload="init();">
+    <div id="infovis"></div>
+  </body>
+</html>
+

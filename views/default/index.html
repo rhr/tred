@@ -1,0 +1,57 @@
+{{extend 'layout.html'}}
+
+{{if treelist.trees:}}
+
+<table>
+{{i=0}}
+{{for source, trees in treelist.sourcelist():}}
+  <tr>
+    {{u = URL(r=request,f="delsrc",vars=dict(s=source))}}
+    <td colspan="7" style="background-color:lightgray">
+      {{=source}}
+      <a href="{{=u}}" title="delete trees from this source">[X]</a>
+    </td>
+  </tr>
+  {{for t in trees:}}
+    <tr>
+      <td style="padding-left:1em">
+        {{=t.name}} ({{=t.root.ntips}} leaves)
+      </td>
+      {{u = URL(r=request,f="view",vars=dict(i=i))}}
+      <td><a href="{{=u}}" title="experimental CSS rendering">HTML</a></td>
+      {{u = URL(r=request,f="printer",vars=dict(i=i))}}
+      <td><a href="{{=u}}" title="pretty printer using reportlab">PDF</a></td>
+      {{u = URL(r=request,f="hyper",vars=dict(i=i))}}
+      <td><a href="{{=u}}" title="experimental: see thejit.org">Hyperbolic</a></td>
+      {{u = URL(r=request,f="spacetree",vars=dict(i=i))}}
+      <td><a href="{{=u}}" title="experimental: see thejit.org">ST</a></td>
+      {{u = URL(r=request,f="newickstr",vars=dict(i=i))}}
+      <td><a href="{{=u}}" title="plain text">Newick</a></td>
+      {{u = URL(r=request,f="delete",vars=dict(i=i))}}
+      <td><a href="{{=u}}">[X]</a></td>
+    </tr>
+    {{i += 1}}
+  {{pass}}
+{{pass}}
+
+<tr>
+  <td colspan="7" style="text-align:right; border-top:1px solid lightgray">
+    {{u = URL(r=request,f="delete_all")}}
+    <a href="{{=u}}">[delete all]</a>
+  </td>
+</tr>
+
+</table>
+
+{{pass}}
+
+<div>
+{{if treelist.trees:}}
+<div style="padding-bottom:0.25em">Add more...</div>
+{{pass}}
+{{=treelist.upload_form(request)}}
+<div style="padding:0.25em;display:none">
+Examples:
+{{=A("plants", _href=URL(r=request,f="upload_example", vars=dict(s="apg")))}}
+</div>
+</div>

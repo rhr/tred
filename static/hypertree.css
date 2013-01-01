@@ -1,0 +1,29 @@
+html, body {
+  width:100%;
+  height:100%;
+  background-color:#444;
+  text-align:center;
+  overflow:hidden;
+  font-size:10px;
+  font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+/* style for the visualization container */
+#infovis {
+  background-color:#222;
+  width:900px;
+  height:800px;
+}
+
+/* style for the visualization's labels */
+.node {
+  border: 1px solid #555;
+  background-color: #ccc;
+  color:#222;
+  cursor:pointer;
+  padding:2px;
+}
+
+.hidden {
+  display:none;
+}
