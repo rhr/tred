@@ -49,7 +49,7 @@ def parse(input, ttable=None):
 
     while 1:
         token = tokens.get_token()
-        #print token,
+        if not token: break
         if token == ';' or token == '':
             ## assert lp == rp, \
             ##        'unbalanced parentheses in tree description'

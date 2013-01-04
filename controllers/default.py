@@ -1,4 +1,4 @@
-som = local_import("som", reload=True)
+import som
 drawtree = som.drawtree
 from cStringIO import StringIO
 import os, commands, glob, subprocess
