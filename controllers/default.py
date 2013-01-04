@@ -1,8 +1,12 @@
 import som
-drawtree = som.drawtree
+from som import newick, phylo, treeio, drawtree
 from cStringIO import StringIO
 import os, commands, glob, subprocess
 
+reload(som)
+for m in newick, phylo, treeio, drawtree:
+    reload(m)
+    
 ## def get_treelist():
 ##     key = response.session_id + ".treelist"
 ##     tlist = cache.ram(
@@ -58,8 +62,8 @@ def printer_reroot():
         nodes = [ n for n in t.root.iternodes() if str(n.id) in v ]
         newroot = t.root.mrca([ n.label for n in nodes ])
         if newroot:
-            newroot = som.phylo.reroot(t.root, newroot)
-            t.newick = som.newick.tostring(newroot)+";"
+            newroot = phylo.reroot(t.root, newroot)
+            t.newick = newick.tostring(newroot)+";"
             t.parse()
     redirect(URL(r=request,f="printer",vars=dict(i=i)))
 
@@ -74,7 +78,9 @@ def printer_prune_taxa():
     v = request.vars.nodeselect
     if v:
         nodes = [ n for n in t.root.iternodes() if str(n.id) in v ]
-        for n in nodes:
+        ## for n in nodes:
+        while nodes:
+            n = nodes[0]
             if n.parent:
                 p = n.parent
                 p.children.remove(n)
@@ -86,7 +92,8 @@ def printer_prune_taxa():
                     c.parent = gp
                     gp.children.insert(gp.children.index(p), c)
                     gp.children.remove(p)
-        t.newick = som.newick.tostring(t.root)+";"
+            nodes = [ n for n in t.root.iternodes() if str(n.id) in v ]
+        t.newick = newick.tostring(t.root)+";"
         t.count_nodes()
     redirect(URL(r=request,f="printer",vars=dict(i=i)))
 
@@ -108,12 +115,6 @@ def view():
     try:
         i = int(request.vars.i)
         t = tlist.trees[i]
-        if request.vars.scaled:
-            t.viewopts.scaled = 1
-        else:
-            t.viewopts.scaled = 0
-        if request.vars.ladderize:
-            t.root.order_subtrees_by_size(recurse=True,reverse=request.vars.rev)
         return dict(tree=t)
     except:
         session.flash = "no tree '%s'" % i
@@ -318,7 +319,7 @@ def printer():
         t.root.order_subtrees_by_size(
             recurse=True,reverse=bool(request.vars.rev)
             )
-        t.newick = som.newick.tostring(t.root)+";"
+        t.newick = newick.tostring(t.root)+";"
 
     fname = "tred-"+response.session_id
     opts = t.printopts
@@ -365,7 +366,7 @@ def printer():
                          "the drawing has been scaled by %0.2f" % scalefact
     return dict(tree=t, pngs=pngs)
 
-def svg_old():        
+def svg():        
     tlist = get_treelist()
     try:
         i = int(request.vars.i)
@@ -390,23 +391,6 @@ def svg_old():
     s = "attachment; filename=%s" % f
     response.headers["Content-Disposition"] = s
     return drawtree.render_svg(d, opts)
-
-
-def svg():        
-    tlist = get_treelist()
-    try:
-        i = int(request.vars.i)
-        t = tlist.trees[i]
-    except:
-        session.flash = "no tree '%s'" % i
-        redirect("index")
-
-    opts = t.printopts
-    root = t.root
-    response.headers["Content-Type"] = "image/svg"
-    f = t.printopts.title + ".svg"
-    s = "attachment; filename=%s" % f
-    response.headers["Content-Disposition"] = s
 
 def hypertree():
     tlist = get_treelist()
@@ -458,7 +442,7 @@ def select_multiple():
     redirect("index")
 
 def upload_example():
-    s = request.vars.s or "test"
+    s = request.vars.s
     fname = "applications/%s/static/%s.newick" % (request.application,s)
     if os.path.exists(fname):
         treelist = get_treelist()
@@ -468,6 +452,7 @@ def upload_example():
 
 def upload_trees():
     buf = request.vars.s
+    #print request.vars.f
     source = "Pasted"
     if buf:
         buf = StringIO(buf)
@@ -478,12 +463,12 @@ def upload_trees():
         session.flash = "Paste trees into text box or upload file"
         redirect("index")
     treelist = get_treelist()
-    for name, newick in som.treeio.extract_newicks_from_buffer(buf):
+    for name, newick in treeio.extract_newicks_from_buffer(buf):
         t = som.Tree(name, newick, source)
         treelist.add(t)
     ## treelist.trees.extend([
     ##     som.Tree(x[0], x[1], source)
-    ##     for x in som.treeio.extract_newicks_from_buffer(buf)
+    ##     for x in treeio.extract_newicks_from_buffer(buf)
     ##     ])
     redirect("index")
 
