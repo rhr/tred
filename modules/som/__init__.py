@@ -2,7 +2,7 @@ import types
 from gluon.html import *
 from gluon.sqlhtml import *
 from gluon.storage import Storage
-import newick, treeview, phylo, treeio, drawtree, svgfig
+from . import newick, treeview, phylo, treeio, drawtree, svgfig
 
 class PrintOpts:
     def __init__(self, **kwargs):
