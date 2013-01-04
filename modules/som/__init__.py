@@ -110,6 +110,7 @@ class Tree:
             ]
         return SELECT(
             _name="nodeselect", _id="nodeselect", _multiple=ON,
+            _size=10,
             #value=" ".join([ str(x) for x in self.selected_nodes ]),
             value=list(self.selected_nodes),
             *opts)

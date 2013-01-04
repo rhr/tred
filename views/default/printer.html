@@ -91,7 +91,7 @@ Title:
   Sort order: {{=tree.sortorder_select(request)}}
 </div>
 <div style="padding:0.25em 0.5em 0em 0.25em">
-  {{u = URL(r=request, f="labelfilter_changed")}}
+  {{u = URL("labelfilter_changed")}}
   <input id="labelfilter" value="{{=tree.labelfilter or ''}}"
          onchange="ajax('{{=u}}',['treenum','labelfilter'],'nodelabels')"
          style="width:100%" />

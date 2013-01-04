@@ -39,6 +39,7 @@ def labelsort_changed():
     return ""
 
 def labelfilter_changed():
+    print request.vars
     tlist = get_treelist()
     try:
         i = int(request.vars.treenum)
@@ -363,10 +364,6 @@ def printer():
         pngs = [ '%s.png.%s' % (fname,i) for i in range(npages) ]
     else:
         pngs = ['%s.png' % fname]
-    print 'pngs', pngs
-    ## if pngs:
-    ##     pngs = [ os.path.split(x)[1] for x in pngs ]
-    ##     pngs.sort()
     if scalefact < 1.0:
         response.flash = "To fit the page width, "\
                          "the drawing has been scaled by %0.2f" % scalefact
