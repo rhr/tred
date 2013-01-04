@@ -351,16 +351,22 @@ def printer():
     t.drawing = d
     buf = StringIO()
     npages, scalefact = drawtree.render_multipage(d, opts, buf)
-    f = file("/tmp/%s.pdf" % fname, "w")
+    f = open("/tmp/%s.pdf" % fname, "w")
     f.write(buf.getvalue())
     f.close()
-    commands.getoutput("rm /tmp/%s*.png" % fname)
+    # use graphicsmagick convert (page numbers *.png.0, *.png.1, ...)
+    commands.getoutput("rm /tmp/%s*.png*" % fname)
     cmd = "convert /tmp/%s.pdf /tmp/%s.png" % (fname, fname)
     exit, out = commands.getstatusoutput(cmd)
-    pngs = glob.glob("/tmp/%s*.png" % fname)
-    if pngs:
-        pngs = [ os.path.split(x)[1] for x in pngs ]
-        pngs.sort()
+    # pngs = glob.glob("/tmp/%s*.png*" % fname)
+    if npages > 1:
+        pngs = [ '%s.png.%s' % (fname,i) for i in range(npages) ]
+    else:
+        pngs = ['%s.png' % fname]
+    print 'pngs', pngs
+    ## if pngs:
+    ##     pngs = [ os.path.split(x)[1] for x in pngs ]
+    ##     pngs.sort()
     if scalefact < 1.0:
         response.flash = "To fit the page width, "\
                          "the drawing has been scaled by %0.2f" % scalefact
