@@ -9,6 +9,7 @@ class Node:
         self.data = {}
         self.isroot = False
         self.istip = False
+        self.ntips = 0
         self.label = None
         self.length = None
         self.age = None

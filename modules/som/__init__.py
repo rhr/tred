@@ -122,7 +122,6 @@ class Tree:
             n.id = i
             if n.parent and n.length == None:
                 self.phylogram = False
-                break
         self.count_nodes()
 
     def count_nodes(self):
