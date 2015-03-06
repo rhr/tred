@@ -1,11 +1,11 @@
-import som
-from som import newick, phylo, treeio, drawtree
+## import som
+from som import Tree, TreeList, newick, phylo, treeio, drawtree
 from cStringIO import StringIO
 import os, commands, glob, subprocess
 
-reload(som)
-for m in newick, phylo, treeio, drawtree:
-    reload(m)
+## reload(som)
+## for m in newick, phylo, treeio, drawtree:
+##     reload(m)
     
 ## def get_treelist():
 ##     key = response.session_id + ".treelist"
@@ -21,7 +21,8 @@ for m in newick, phylo, treeio, drawtree:
 
 def get_treelist():
     if not session.treelist:
-        session.treelist = som.TreeList()
+        ## session.treelist = som.TreeList()
+        session.treelist = TreeList()
     return session.treelist
 
 def index():
@@ -449,7 +450,8 @@ def upload_example():
     fname = "applications/%s/static/%s.newick" % (request.application,s)
     if os.path.exists(fname):
         treelist = get_treelist()
-        t = som.Tree(s, file(fname).read(), "Example")
+        ## t = som.Tree(s, file(fname).read(), "Example")
+        t = Tree(s, file(fname).read(), "Example")
         treelist.add(t)
     redirect("index")
 
@@ -467,7 +469,8 @@ def upload_trees():
         redirect("index")
     treelist = get_treelist()
     for name, newick in treeio.extract_newicks_from_buffer(buf):
-        t = som.Tree(name, newick, source)
+        ## t = som.Tree(name, newick, source)
+        t = Tree(name, newick, source)
         treelist.add(t)
     ## treelist.trees.extend([
     ##     som.Tree(x[0], x[1], source)
